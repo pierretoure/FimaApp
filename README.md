@@ -1,0 +1,5 @@
+# FimaApp
+
+```sh
+flutter run
+```
