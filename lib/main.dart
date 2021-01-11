@@ -35,7 +35,7 @@ void main() async {
     );
 
     // Load users
-    final users = await Api.getUsers();
+    final users = await FimaApi.getUsers();
     store.dispatch(SetUsersAction(users));
 
     WidgetsFlutterBinding.ensureInitialized();

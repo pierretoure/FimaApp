@@ -7,10 +7,7 @@ import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
-const localhost = '192.168.1.27';
-const apiUrl = 'http://$localhost:8080/api';
-
-abstract class ApiSchema {
+class ApiSchema {
     // Users
     static Future<List<User>> Function() getUsers;
 
@@ -21,26 +18,67 @@ abstract class ApiSchema {
     static Future<void> Function(Service service) getDelegatedUser;
 }
 
-class Api implements ApiSchema {
-    static getDataFromHttpResponse(Response response) {
+/// Api schema
+///
+/// - Users
+/// static Future<List<User>> getUsers();
+/// static Future<void> getDelegatedUserOf(Service service);
+/// 
+/// - Services
+/// static List<Service> services();
+/// 
+/// - Tasks
+/// static Future<List<Task>> getTasksOf(Service service);
+/// static Future<Task> createTask(Task task)
+/// 
+/// - Shoplist
+/// static Future<List<ShopItem>> getShoplistItems()
+///
+
+const localhost = '192.168.1.27';
+const fimaApiUrl = 'http://$localhost:8080/api';
+
+const airtableApiUrl = 'https://api.airtable.com/v0/appzoC47IZLQGiNem';
+
+class FimaApi {
+    static getDataFrom(Response response) {
         var json = convert.jsonDecode(response.body);
         return json['data'];
     }
 
+    final airtableAuthHeaders = [];
+
+    // Users
+
     static Future<List<User>> getUsers() async {
-        var url = '$apiUrl/users';
+        var url = '$fimaApiUrl/users';
         List<User> users = [];
         var response = await http.get(url);
         if (response.statusCode == 200) {
-            final data = getDataFromHttpResponse(response);
+            final data = getDataFrom(response);
             users = data.map<User>((_user) => User.fromJson(_user)).toList();
         } else {
             print('Request failed with status: ${response.statusCode}.');
         }
         return users;
     }
+
+    static Future<User> getDelegatedUserOf(Service service) async {
+        var url = '$fimaApiUrl/services/${service.id}/delegatedUser';
+        User user;
+        var response = await http.get(url);
+        if (response.statusCode == 200) {
+            final data = getDataFrom(response);
+            user = User.fromJson(data);
+        } else {
+            print('Request failed with status: ${response.statusCode}.');
+        }
+        return user;
+    }
+
+    // Services
     
-    static List<Service> getServices() => [
+    static List<Service> services = [
         Service(
             title: 'Table',
             id: 1,
@@ -50,13 +88,15 @@ class Api implements ApiSchema {
             id: 2,
             icon: Icons.account_balance),
     ];
+
+    // Tasks
     
-    static Future<void> getTasks(Service service) async {
+    static Future<List<Task>> getTasksOf(Service service) async {
         List<Task> tasks;
-        var url = '$apiUrl/services/${service.id}/tasks';
+        var url = '$fimaApiUrl/services/${service.id}/tasks';
         var response = await http.get(url);
         if (response.statusCode == 200) {
-            final data = getDataFromHttpResponse(response);
+            final data = getDataFrom(response);
             tasks = data.map<Task>((_task) => Task.fromJson(_task)).toList();
         } else {
             print('Request failed with status: ${response.statusCode}.');
@@ -64,31 +104,15 @@ class Api implements ApiSchema {
         return tasks;
     }
     
-    static Future<void> doTask({@required Service service, @required User user, DateTime date, Meal meal}) async {
-        var url = '$apiUrl/services/${service.id}/tasks';
+    static Future<void> createTask(Task task) async {
+        var url = '$fimaApiUrl/services/${task.service.id}/tasks';
         var response = await http.post(url, body: {
-            'user_id': user.id,
-            'date': date.toIso8601String()+'Z',
-            'meal': meal.toString().split('.').last
+            'user_id': task.user.id,
+            'date': task.date.toIso8601String()+'Z',
+            'meal': task.meal.toString().split('.').last
         });
-        print('date: $date');
-        print('date.toIso8601String(): ${date.toIso8601String()}');
-        print(response.body);
         if (response.statusCode != 200) {
             print('Request failed with status: ${response.statusCode}.');
         }
-    }
-
-    static Future<User> getDelegatedUser(Service service) async {
-        var url = '$apiUrl/services/${service.id}/delegatedUser';
-        User user;
-        var response = await http.get(url);
-        if (response.statusCode == 200) {
-            final data = getDataFromHttpResponse(response);
-            user = User.fromJson(data);
-        } else {
-            print('Request failed with status: ${response.statusCode}.');
-        }
-        return user;
     }
 }

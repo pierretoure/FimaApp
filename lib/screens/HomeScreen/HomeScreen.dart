@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                         ),
                     ),
-                    ...Api.getServices().map((_service) => 
+                    ...FimaApi.services.map((_service) => 
                         Padding(
                             padding: const EdgeInsets.only(bottom: 16),
                             child: ServiceCard(service: _service),

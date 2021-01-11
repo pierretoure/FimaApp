@@ -1,5 +1,6 @@
 import 'package:FimaApp/modals/Meal.dart';
 import 'package:FimaApp/modals/Service.dart';
+import 'package:FimaApp/modals/Task.dart';
 import 'package:FimaApp/modals/User.dart';
 import 'package:FimaApp/redux/states/AppState.dart';
 import 'package:FimaApp/screens/HomeScreen/components/UserTag.dart';
@@ -76,11 +77,12 @@ class ServiceCardActionDialog extends HookWidget {
                         ),
                     ),
                     onPressed: () async {
-                        await Api.doTask(
-                            service: service, 
+                        final newTask = Task(
+                            service: service,
                             user: selectedUserController.value,
                             date: selectedDateController.value,
                             meal: selectedMealController.value);
+                        await FimaApi.createTask(newTask);
                         await asyncCallback();
                         Navigator.of(context).pop();
                     },

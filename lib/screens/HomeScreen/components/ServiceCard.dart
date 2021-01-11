@@ -25,8 +25,8 @@ class ServiceCard extends HookWidget {
             var isDisposed = false;
             final fetchDelegatedUserAndTasks = () async {
                 final List delegatedUserAndTasks = await Future.wait([
-                    Api.getDelegatedUser(service),
-                    Api.getTasks(service)
+                    FimaApi.getDelegatedUserOf(service),
+                    FimaApi.getTasksOf(service)
                 ]);
                 if (!isDisposed) {
                     delegatedUser.value = delegatedUserAndTasks[0];
@@ -52,8 +52,8 @@ class ServiceCard extends HookWidget {
                                 service: service,
                                 actualizeDelegedUser: () async { 
                                     final List delegatedUserAndTasks = await Future.wait([
-                                        Api.getDelegatedUser(service),
-                                        Api.getTasks(service)
+                                        FimaApi.getDelegatedUserOf(service),
+                                        FimaApi.getTasksOf(service)
                                     ]);
                                     delegatedUser.value = delegatedUserAndTasks[0];
                                     tasks.value = delegatedUserAndTasks[1];
