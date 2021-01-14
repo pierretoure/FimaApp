@@ -2,21 +2,16 @@ import 'package:FimaApp/redux/actions/UserActions.dart';
 import 'package:FimaApp/redux/reducers/UserReducer.dart';
 import 'package:FimaApp/redux/states/AppState.dart';
 import 'package:FimaApp/screens/AuthenticationScreen/AuthenticationScreen.dart';
-import 'package:FimaApp/utils/Api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_persist/redux_persist.dart';
 import 'package:redux_persist_flutter/redux_persist_flutter.dart';
+import 'package:flutter_redux_hooks/flutter_redux_hooks.dart';
 
 void main() async {
-    // Load in locale
-    // await initializeDateFormatting('fr_FR', null);
-
     // Initialize state persistor
     final persistor = Persistor<AppState>(
         storage: FlutterStorage(),
@@ -24,8 +19,13 @@ void main() async {
     );
 
     WidgetsFlutterBinding.ensureInitialized();
+
     // Load persisted state
-    final initialState = await persistor.load();
+    AppState initialState = await persistor.load();
+    // Ensure api is initialized (i.e. Secrets are loaded in LocalStorage)
+    if (initialState.api == null) {
+        initialState = await initialState.initializeApi();
+    }
 
     // Create store with loaded state
     final store = Store<AppState>(
@@ -35,7 +35,7 @@ void main() async {
     );
 
     // Load users
-    final users = await FimaApi.getUsers();
+    final users = await store.state.api.getUsers();
     store.dispatch(SetUsersAction(users));
 
     WidgetsFlutterBinding.ensureInitialized();

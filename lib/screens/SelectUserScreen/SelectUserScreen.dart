@@ -2,14 +2,14 @@ import 'package:FimaApp/modals/User.dart';
 import 'package:FimaApp/redux/states/AppState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_redux_hooks/flutter_redux_hooks.dart';
 
 import 'components/UserCard.dart';
 
 class SelectUserScreen extends HookWidget {
     @override
     Widget build(BuildContext context) {
-        // final users = useState<List<User>>([]);
+        final users = useSelector<AppState, List<User>>((state) => state.users);
         // useEffect(() {
         //     var isDisposed = false;
         //     final fetchUsers = () async {
@@ -32,10 +32,7 @@ class SelectUserScreen extends HookWidget {
                             child: buildTitle(),
                         )
                     ),
-                    StoreConnector<AppState, List<User>>(
-                        converter: (store) => store.state.users,
-                        builder: (context, users) => buildUserGrid(users),
-                    ),
+                    buildUserGrid(users),
                 ],
             ),
         );

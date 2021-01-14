@@ -1,3 +1,4 @@
+import 'package:FimaApp/Hooks/UseApi.dart';
 import 'package:FimaApp/modals/Meal.dart';
 import 'package:FimaApp/modals/Service.dart';
 import 'package:FimaApp/modals/Task.dart';
@@ -9,6 +10,7 @@ import 'package:FimaApp/widgets/Tag/Tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_redux_hooks/flutter_redux_hooks.dart';
 import 'package:intl/intl.dart';
 
 import 'ServiceCardActionDialogSectionTitle.dart';
@@ -29,6 +31,10 @@ class ServiceCardActionDialog extends HookWidget {
 
     @override
     Widget build(BuildContext context) {
+        final createTask = useApi<Future<Task> Function(Task)>
+            ((api) => (task) => api.createTask(task));
+        final users = useSelector<AppState, List<User>>((state) => state.users);
+
         // User
         final selectedUserController = useState<User>(user);
 
@@ -52,7 +58,7 @@ class ServiceCardActionDialog extends HookWidget {
             ),
             content: Column(
                 children: [
-                    buildUserSection(selectedUserController),
+                    buildUserSection(users, selectedUserController),
                     buildDateSection(context, selectedMealController, selectedDateController),
                 ],
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +88,7 @@ class ServiceCardActionDialog extends HookWidget {
                             user: selectedUserController.value,
                             date: selectedDateController.value,
                             meal: selectedMealController.value);
-                        await FimaApi.createTask(newTask);
+                        await createTask(newTask);
                         await asyncCallback();
                         Navigator.of(context).pop();
                     },
@@ -161,26 +167,21 @@ class ServiceCardActionDialog extends HookWidget {
         );
     }
 
-    Column buildUserSection(ValueNotifier<User> selectedUserController) {
+    Column buildUserSection(List<User> users, ValueNotifier<User> selectedUserController) {
       return Column(
             children: [
                 ServiceCardActionDialogSectionTitle(title: 'Qui ?'),
                 Padding(
                     padding: const EdgeInsets.only(top: 8.0),
-                    child: StoreConnector<AppState, List<User>>(
-                        converter: (store) => store.state.users,
-                        builder: (context, users) {
-                            return Wrap(
-                                children: users.map((_user) => Padding(
-                                    padding: const EdgeInsets.only(right: 8, bottom: 8),
-                                    child: UserTag(
-                                        user: _user,
-                                        isGrey: selectedUserController.value.id != _user.id,
-                                        onTap: () => selectedUserController.value = _user,
-                                    ),
-                               )).toList());
-                        }
-                    ),
+                    child: Wrap(
+                        children: users.map((_user) => Padding(
+                            padding: const EdgeInsets.only(right: 8, bottom: 8),
+                            child: UserTag(
+                                user: _user,
+                                isGrey: selectedUserController.value.id != _user.id,
+                                onTap: () => selectedUserController.value = _user,
+                            ),
+                        )).toList()),
                 ),
             ],
             crossAxisAlignment: CrossAxisAlignment.start,

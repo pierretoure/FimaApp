@@ -1,6 +1,6 @@
 import 'package:FimaApp/modals/Meal.dart';
 import 'package:FimaApp/modals/User.dart';
-import 'package:FimaApp/utils/Convertors.dart';
+import 'package:FimaApp/utils/Converters.dart';
 
 class Task {
     final String id;
@@ -23,7 +23,7 @@ class Task {
         user: json['user'] != null ? User.fromJson(json['user']) : 'unknow',
         service: json['service'] != null ? json['service'] : 'unknow',
         date: json['date'] != null ? DateTime.parse(json['date']) : 'unknow',
-        meal: json['meal'] != null ? MealConvertor.parse(json['meal']) : 'unknow',
+        meal: json['meal'] != null ? MealConverter.parse(json['meal']) : 'unknow',
     );
 
     // !!!

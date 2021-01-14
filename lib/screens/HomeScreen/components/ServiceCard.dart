@@ -1,7 +1,7 @@
+import 'package:FimaApp/Hooks/UseApi.dart';
 import 'package:FimaApp/modals/Service.dart';
 import 'package:FimaApp/modals/Task.dart';
 import 'package:FimaApp/modals/User.dart';
-import 'package:FimaApp/utils/Api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -18,6 +18,11 @@ class ServiceCard extends HookWidget {
 
     @override
     Widget build(BuildContext context) {
+        final getDelegatedUserOf = useApi<Future<User> Function(Service)>((api) => 
+            (service) => api.getDelegatedUserOf(service));
+        final getTasksOf = useApi<Future<List<Task>> Function(Service)>((api) => 
+            (service) => api.getTasksOf(service));
+
         final delegatedUser = useState<User>(null);
         final tasks = useState<List<Task>>([]);
 
@@ -25,8 +30,8 @@ class ServiceCard extends HookWidget {
             var isDisposed = false;
             final fetchDelegatedUserAndTasks = () async {
                 final List delegatedUserAndTasks = await Future.wait([
-                    FimaApi.getDelegatedUserOf(service),
-                    FimaApi.getTasksOf(service)
+                    getDelegatedUserOf(service),
+                    getTasksOf(service)
                 ]);
                 if (!isDisposed) {
                     delegatedUser.value = delegatedUserAndTasks[0];
@@ -52,8 +57,8 @@ class ServiceCard extends HookWidget {
                                 service: service,
                                 actualizeDelegedUser: () async { 
                                     final List delegatedUserAndTasks = await Future.wait([
-                                        FimaApi.getDelegatedUserOf(service),
-                                        FimaApi.getTasksOf(service)
+                                        getDelegatedUserOf(service),
+                                        getTasksOf(service)
                                     ]);
                                     delegatedUser.value = delegatedUserAndTasks[0];
                                     tasks.value = delegatedUserAndTasks[1];

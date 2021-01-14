@@ -7,7 +7,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 class FimaApp extends HookWidget {
     @override
     Widget build(BuildContext context) {
-        final index = useState(1);
+        final index = useState<int>(1);
         final screens = [
             ShoppingScreen(),
             HomeScreen(),
@@ -31,6 +31,7 @@ class FimaApp extends HookWidget {
                         onTap: (idx) => index.value = idx,
                         currentIndex: index.value,
                         iconSize: 34,
+                        type: BottomNavigationBarType.fixed,
                     ),
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(32), 
@@ -51,6 +52,7 @@ class FimaApp extends HookWidget {
                 ),
             ),
             backgroundColor: Color(0xfff5f5f5),// Colors.grey[50],
+            resizeToAvoidBottomInset: false,
         );
     }
 }

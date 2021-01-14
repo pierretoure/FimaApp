@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:FimaApp/modals/Service.dart';
 import 'package:FimaApp/modals/Task.dart';
 import 'package:FimaApp/modals/User.dart';
-import 'package:FimaApp/utils/Convertors.dart';
+import 'package:FimaApp/utils/Converters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
@@ -55,7 +55,7 @@ class ServiceCardBody extends HookWidget {
         return Column(
             children: tasks.length > 0
             ? tasks.sublist(0, min(tasks.length, 6)).map((_task) {
-                String dateInfo = '${_task.date.day} ${service.id == 1 ? MealConvertor.translateFR(_task.meal) : DateFormat.MMM('fr_FR').format(_task.date)}';
+                String dateInfo = '${_task.date.day} ${service.id == 1 ? MealConverter.translateFR(_task.meal) : DateFormat.MMM('fr_FR').format(_task.date)}';
                 return Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Row(
