@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:FimaApp/modals/Meal.dart';
 import 'package:FimaApp/modals/ShoplistItem.dart';
 import 'package:flutter/material.dart';

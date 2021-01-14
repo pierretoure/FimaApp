@@ -33,7 +33,13 @@ class ShoppingScreen extends HookWidget {
                 ? Center(
                     child: CircularProgressIndicator(),
                 )
-                : ShoplistItemsListView(shoplistItemController: shoplistItemController),
+                : ShoplistItemsListView(
+                    shoplistItemController: shoplistItemController,
+                    onRefresh: () async {
+                        final _shoplistItems = await getShoplistItems();
+                        shoplistItemController.value = _shoplistItems;
+                    },
+                ),
             ),
             floatingActionButton: FloatingActionButton(
                 child: Icon(Icons.add_rounded, size: 32),

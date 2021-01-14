@@ -5,8 +5,8 @@ import 'package:FimaApp/redux/states/AppState.dart';
 import 'package:FimaApp/screens/HomeScreen/components/UserTag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_hooks/flutter_redux_hooks.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'UpdateShoplistItemDialog.dart';
 
@@ -14,9 +14,11 @@ class ShoplistItemsListView extends HookWidget {
     const ShoplistItemsListView({
         Key key,
         @required this.shoplistItemController,
+        this.onRefresh,
     }) : super(key: key);
 
     final ValueNotifier<List<ShoplistItem>> shoplistItemController;
+    final Future<void> Function() onRefresh;
 
     @override
     Widget build(BuildContext context) {
@@ -24,22 +26,32 @@ class ShoplistItemsListView extends HookWidget {
             ((api) => (_item) => api.deleteShoplistItem(_item));
         final users = useSelector<AppState, List<User>>((state) => state.users);
 
-        return ListView.separated(
-            itemCount: shoplistItemController.value.length,
-            itemBuilder: (context, index) {
-                ShoplistItem item = shoplistItemController.value.elementAt(index);
-                final user = item.username != null
-                    ? users.firstWhere((_user) => _user.name.toLowerCase() == item.username.toLowerCase(), orElse: () => null)
-                    : null;
-                return ShoplistItemDismissible(
-                    item: item, 
-                    user: user,
-                    onTap: () => 
-                        showUpdateShoplistItemDialog(context, item), 
-                    onDismissed: (_) => cleanDeleteShoplistItem(deleteShoplistItem, item));
+        final refreshController = RefreshController();
+
+        return SmartRefresher(
+            child: ListView.separated(
+                itemCount: shoplistItemController.value.length,
+                itemBuilder: (context, index) {
+                    ShoplistItem item = shoplistItemController.value.elementAt(index);
+                    final user = item.username != null
+                        ? users.firstWhere((_user) => _user.name.toLowerCase() == item.username.toLowerCase(), orElse: () => null)
+                        : null;
+                    return ShoplistItemDismissible(
+                        item: item, 
+                        user: user,
+                        onTap: () => 
+                            showUpdateShoplistItemDialog(context, item), 
+                        onDismissed: (_) => cleanDeleteShoplistItem(deleteShoplistItem, item));
+                },
+                separatorBuilder: (context, index) => Divider(height: 1),
+                padding: EdgeInsets.only(bottom: 96),
+            ),
+            controller: refreshController,
+            onRefresh: () async {
+                await onRefresh();
+                refreshController.refreshCompleted();
             },
-            separatorBuilder: (context, index) => Divider(height: 1),
-            padding: EdgeInsets.only(bottom: 96),
+            enablePullUp: false,
         );
     }
 

@@ -31,6 +31,7 @@ dependencies:
   flutter_redux_hooks: ^0.1.2
   http: ^0.12.2
   intl: ^0.16.1
+  pull_to_refresh: ^1.6.3
   redux: ^4.0.0+3
   redux_persist: ^0.8.4
   redux_persist_flutter: ^0.8.3
