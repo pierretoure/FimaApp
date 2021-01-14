@@ -10,7 +10,7 @@ import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
-import 'Convertors.dart';
+import 'Converters.dart';
 
 /// FimaApi Schema
 ///
@@ -152,7 +152,7 @@ class FimaApi {
         var response = await http.get(url, headers: airtableAuthHeaders);
         if (response.statusCode == 200) {
             final records = _getAirtableRecordsFrom(response);
-            shopItems = records.map<ShopItem>((_record) => ShoplistItemConvertor.parseAirtableRecord(_record)).toList();
+            shopItems = records.map<ShopItem>((_record) => ShoplistItemConverter.parseAirtableRecord(_record)).toList();
         } else {
             print('Request failed with status: ${response.statusCode}.');
         }
@@ -179,7 +179,7 @@ class FimaApi {
         ShopItem createdItem;
         if (response.statusCode == 200) {
             final records = _getAirtableRecordsFrom(response);
-            createdItem = ShoplistItemConvertor.parseAirtableRecord(records.first);
+            createdItem = ShoplistItemConverter.parseAirtableRecord(records.first);
         } else {
             print('Request failed with status: ${response.statusCode}.');
         }
@@ -207,7 +207,7 @@ class FimaApi {
         ShopItem updatedItem;
         if (response.statusCode == 200) {
             final records = _getAirtableRecordsFrom(response);
-            updatedItem = ShoplistItemConvertor.parseAirtableRecord(records.first);
+            updatedItem = ShoplistItemConverter.parseAirtableRecord(records.first);
         } else {
             print('Request failed with status: ${response.statusCode}.');
         }

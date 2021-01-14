@@ -1,6 +1,9 @@
-import 'package:FimaApp/modals/Meal.dart';
+import 'dart:convert';
 
-class MealConvertor {
+import 'package:FimaApp/modals/Meal.dart';
+import 'package:FimaApp/modals/ShopItem.dart';
+
+class MealConverter {
     static Meal parse(String meal) {
         return meal == 'LUNCH' 
         ? Meal.LUNCH
@@ -22,4 +25,9 @@ class MealConvertor {
         }
         return translatedMeal;
     }
+}
+
+class ShoplistItemConverter {
+    static ShopItem parseAirtableRecord(dynamic record) => 
+        ShopItem.fromJson({'id': record['id'], ...record['fields']});
 }
