@@ -10,17 +10,6 @@ class SelectUserScreen extends HookWidget {
     @override
     Widget build(BuildContext context) {
         final users = useSelector<AppState, List<User>>((state) => state.users);
-        // useEffect(() {
-        //     var isDisposed = false;
-        //     final fetchUsers = () async {
-        //         final _users = await Api.getUsers();
-        //         if (!isDisposed) users.value = _users;
-        //     };
-        //     fetchUsers();
-        //     return () {
-        //         isDisposed = true;
-        //     };
-        // }, []);
 
         return Padding(
             padding: const EdgeInsets.symmetric(vertical: 64, horizontal: 46),

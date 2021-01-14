@@ -1,4 +1,5 @@
 import 'package:FimaApp/modals/User.dart';
+import 'package:FimaApp/utils/Converters.dart';
 import 'package:FimaApp/widgets/Tag/Tag.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +22,7 @@ class UserTag extends StatelessWidget {
         : 'loading...';
         String userColor = user == null || isGrey
         ? '000000'
-        : user.color.replaceFirst(new RegExp(r'#'), '') ?? '000000';
+        : UserColorConverter.parseToString(user.color) ?? '000000';
         return Tag(
             key: key,
             label: userName,

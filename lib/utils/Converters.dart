@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:FimaApp/modals/Meal.dart';
 import 'package:FimaApp/modals/ShoplistItem.dart';
+import 'package:flutter/material.dart';
 
 class MealConverter {
     static Meal parse(String meal) {
@@ -30,4 +31,9 @@ class MealConverter {
 class ShoplistItemConverter {
     static ShoplistItem parseAirtableRecord(dynamic record) => 
         ShoplistItem.fromJson({'id': record['id'], ...record['fields']});
+}
+
+class UserColorConverter {
+    static String parseToString(String userColor) => userColor.replaceFirst(new RegExp(r'#'), '');
+    static Color parse(String userColor) => Color(int.parse('0xff${parseToString(userColor)}'));
 }
