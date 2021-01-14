@@ -6,6 +6,7 @@ import 'package:FimaApp/modals/User.dart';
 import 'package:FimaApp/redux/states/AppState.dart';
 import 'package:FimaApp/screens/HomeScreen/components/UserTag.dart';
 import 'package:FimaApp/utils/Api.dart';
+import 'package:FimaApp/widgets/Tag/FimaDialog/FimaDialog.dart';
 import 'package:FimaApp/widgets/Tag/Tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -48,14 +49,8 @@ class ServiceCardActionDialog extends HookWidget {
         : Meal.DINNER; 
         final selectedMealController = useState<Meal>(initialSelectedMeal);
 
-        return AlertDialog(
-            title: Text(
-                service.title,
-                style: TextStyle(
-                    color: Colors.grey[700],
-                    fontSize: 23
-                ),
-            ),
+        return FimaDialog(
+            title: service.title,
             content: Column(
                 children: [
                     buildUserSection(users, selectedUserController),
@@ -64,46 +59,25 @@ class ServiceCardActionDialog extends HookWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
             ),
-            actions: [
-                FlatButton(
-                    child: Text(
-                        'Annuler',
-                        style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 18,
-                        ),
-                    ),
-                    onPressed: () => Navigator.of(context).pop(),
-                ),
-                FlatButton(
-                    child: Text(
-                        'Valider',
-                        style: TextStyle(
-                            fontSize: 18,
-                        ),
-                    ),
-                    onPressed: () async {
-                        final newTask = Task(
-                            service: service,
-                            user: selectedUserController.value,
-                            date: selectedDateController.value,
-                            meal: selectedMealController.value);
-                        await createTask(newTask);
-                        await asyncCallback();
-                        Navigator.of(context).pop();
-                    },
-                ),
-            ],
-            
+            onValidButtonPressedAsync: () async { 
+                final newTask = Task(
+                    service: service,
+                    user: selectedUserController.value,
+                    date: selectedDateController.value,
+                    meal: selectedMealController.value);
+                await createTask(newTask);
+                await asyncCallback();
+            },
         );
     }
 
     Padding buildDateSection(
         BuildContext context,
         ValueNotifier<Meal> selectedMealController,
-        ValueNotifier<DateTime> selectedDateController) {
+        ValueNotifier<DateTime> selectedDateController
+    ) {
         final selectedDate = selectedDateController.value;
-      return Padding(
+        return Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Column(
                 children: [
@@ -168,7 +142,7 @@ class ServiceCardActionDialog extends HookWidget {
     }
 
     Column buildUserSection(List<User> users, ValueNotifier<User> selectedUserController) {
-      return Column(
+        return Column(
             children: [
                 ServiceCardActionDialogSectionTitle(title: 'Qui ?'),
                 Padding(
