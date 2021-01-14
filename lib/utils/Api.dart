@@ -151,8 +151,8 @@ class FimaApi {
         var url = '$airtableApiUrl/courses';
         var response = await http.get(url, headers: airtableAuthHeaders);
         if (response.statusCode == 200) {
-            final records = _getAirtableRecordsFrom(response);
-            shoplistItems = records.map<ShoplistItem>((_record) => ShoplistItemConverter.parseAirtableRecord(_record)).toList();
+            final List records = _getAirtableRecordsFrom(response);
+            shoplistItems = records.map<ShoplistItem>((_record) => ShoplistItemConverter.parseAirtableRecord(_record)).where((item) => item.product.length > 0).toList();
         } else {
             print('Request failed with status: ${response.statusCode}.');
         }

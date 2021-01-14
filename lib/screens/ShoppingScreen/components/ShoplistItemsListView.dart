@@ -124,7 +124,7 @@ class ShoplistItemDismissible extends StatelessWidget {
                         color: Colors.grey[700]
                     ),
                     children: <TextSpan>[
-                        TextSpan(text: item.product ?? '???'),
+                        TextSpan(text: item.product),
                         TextSpan(
                             text: item.quantity != null 
                                 ? ' (${item.quantity.replaceAll(' ', '')})' 

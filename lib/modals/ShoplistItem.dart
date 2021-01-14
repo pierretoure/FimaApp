@@ -16,7 +16,7 @@ class ShoplistItem {
     // !!!
     static ShoplistItem fromJson(json) => ShoplistItem(
         id: json['id'] != null ? json['id'] : 'unknow id',
-        product: json['produit'] != null ? json['produit'] : 'non renseigné',
+        product: json['produit'] != null ? json['produit'] : '',
         username: json['utilisateur'],
         quantity: json['quantité']
     );

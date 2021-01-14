@@ -38,8 +38,6 @@ class ServiceCard extends HookWidget {
                     getTasksOf(service)
                 ]);
                 if (!isDisposed) {
-                    final _ = await getDelegatedUserOf(service);
-                    print(_.name);
                     delegatedUser.value = delegatedUserAndTasks[0];
                     tasks.value = delegatedUserAndTasks[1];
                 }
