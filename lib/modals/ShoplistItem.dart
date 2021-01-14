@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class ShopItem {
+class ShoplistItem {
     final String id;
     final String product;
     final String username;
     final String quantity;
 
-    const ShopItem({
+    const ShoplistItem({
         @required this.id,
         @required this.product,
         this.username,
@@ -14,7 +14,7 @@ class ShopItem {
     });
 
     // !!!
-    static ShopItem fromJson(json) => ShopItem(
+    static ShoplistItem fromJson(json) => ShoplistItem(
         id: json['id'] != null ? json['id'] : 'unknow id',
         product: json['produit'] != null ? json['produit'] : 'non renseigné',
         username: json['utilisateur'],

@@ -1,5 +1,5 @@
 import 'package:FimaApp/Hooks/UseApi.dart';
-import 'package:FimaApp/modals/ShopItem.dart';
+import 'package:FimaApp/modals/ShoplistItem.dart';
 import 'package:FimaApp/modals/User.dart';
 import 'package:FimaApp/redux/states/AppState.dart';
 import 'package:flutter/material.dart';
@@ -15,13 +15,13 @@ class UpdateShoplistItemDialog extends HookWidget {
         this.onShoplistItemUpdated,
     }) : super(key: key);
 
-    final ShopItem item;
-    final void Function(ShopItem toBeUpdatedItem) onShoplistItemWillBeUpdated;
-    final void Function(ShopItem updatedItem) onShoplistItemUpdated;
+    final ShoplistItem item;
+    final void Function(ShoplistItem toBeUpdatedItem) onShoplistItemWillBeUpdated;
+    final void Function(ShoplistItem updatedItem) onShoplistItemUpdated;
 
     @override
     Widget build(BuildContext context) {
-        final updateShoplistItem = useApi<Future<ShopItem> Function(ShopItem)>
+        final updateShoplistItem = useApi<Future<ShoplistItem> Function(ShoplistItem)>
             ((api) => (_item) => api.updateShoplistItem(_item));
         final user = useSelector<AppState, User>((state) => state.user);
         
@@ -72,7 +72,7 @@ class UpdateShoplistItemDialog extends HookWidget {
                         ),
                     ),
                     onPressed: () async {
-                        final toBeUpdatedItem = ShopItem(
+                        final toBeUpdatedItem = ShoplistItem(
                             id: item.id,
                             product: productNameController.value.text,
                             quantity: quantityController.value.text,

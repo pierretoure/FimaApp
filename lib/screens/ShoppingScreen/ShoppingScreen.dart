@@ -1,5 +1,5 @@
 import 'package:FimaApp/Hooks/UseApi.dart';
-import 'package:FimaApp/modals/ShopItem.dart';
+import 'package:FimaApp/modals/ShoplistItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -9,9 +9,9 @@ import 'components/ShoplistItemsListView.dart';
 class ShoppingScreen extends HookWidget {
     @override
     Widget build(BuildContext context) {
-        final shoplistItemController = useState<List<ShopItem>>([]);
+        final shoplistItemController = useState<List<ShoplistItem>>([]);
         final isLoadingController = useState<bool>(true);
-        final getShoplistItems = useApi<Future<List<ShopItem>> Function()>
+        final getShoplistItems = useApi<Future<List<ShoplistItem>> Function()>
             ((api) => () => api.getShoplistItems());
 
         useEffect(() {

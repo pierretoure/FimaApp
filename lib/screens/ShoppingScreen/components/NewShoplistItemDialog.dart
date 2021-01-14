@@ -1,5 +1,5 @@
 import 'package:FimaApp/Hooks/UseApi.dart';
-import 'package:FimaApp/modals/ShopItem.dart';
+import 'package:FimaApp/modals/ShoplistItem.dart';
 import 'package:FimaApp/modals/User.dart';
 import 'package:FimaApp/redux/states/AppState.dart';
 import 'package:FimaApp/utils/Api.dart';
@@ -15,12 +15,12 @@ class NewShoplistItemDialog extends HookWidget {
         this.onShoplistItemSubmited,
     }) : super(key: key);
 
-    final void Function(ShopItem item) onShoplistItemCreated;
-    final void Function(ShopItem item) onShoplistItemSubmited;
+    final void Function(ShoplistItem item) onShoplistItemCreated;
+    final void Function(ShoplistItem item) onShoplistItemSubmited;
 
     @override
     Widget build(BuildContext context) {
-        final createShoplistItem = useApi<Future<ShopItem> Function(ShopItem)>
+        final createShoplistItem = useApi<Future<ShoplistItem> Function(ShoplistItem)>
             ((api) => (_item) => api.createShoplistItem(_item));
         final user = useSelector<AppState, User>((state) => state.user);
         
@@ -71,7 +71,7 @@ class NewShoplistItemDialog extends HookWidget {
                         ),
                     ),
                     onPressed: () async {
-                        final newItem = ShopItem(
+                        final newItem = ShoplistItem(
                             id: 'WILL_BE_CREATED_BY_AIRTABLE',
                             product: productNameController.value.text,
                             quantity: quantityController.value.text,

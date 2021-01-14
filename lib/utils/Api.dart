@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:FimaApp/modals/Secrets.dart';
 import 'package:FimaApp/modals/Service.dart';
-import 'package:FimaApp/modals/ShopItem.dart';
+import 'package:FimaApp/modals/ShoplistItem.dart';
 import 'package:FimaApp/modals/Task.dart';
 import 'package:FimaApp/modals/User.dart';
 import 'package:flutter/material.dart';
@@ -26,10 +26,10 @@ import 'Converters.dart';
 /// static Future<Task> createTask(Task task)
 /// 
 /// - Shoplist
-/// static Future<List<ShopItem>> getShoplistItems()
-/// static Future<ShopItem> createShoplistItem(ShopItem item)
-/// static Future<ShopItem> updateShoplistItem(ShopItem item)
-/// static Future<void> deleteShoplistItem(ShopItem item)
+/// static Future<List<ShoplistItem>> getShoplistItems()
+/// static Future<ShoplistItem> createShoplistItem(ShoplistItem item)
+/// static Future<ShoplistItem> updateShoplistItem(ShoplistItem item)
+/// static Future<void> deleteShoplistItem(ShoplistItem item)
 ///
 class FimaApi {
 
@@ -146,20 +146,20 @@ class FimaApi {
 
     // !! Shoplist
 
-    Future<List<ShopItem>> getShoplistItems() async {
-        List<ShopItem> shopItems;
+    Future<List<ShoplistItem>> getShoplistItems() async {
+        List<ShoplistItem> shoplistItems;
         var url = '$airtableApiUrl/courses';
         var response = await http.get(url, headers: airtableAuthHeaders);
         if (response.statusCode == 200) {
             final records = _getAirtableRecordsFrom(response);
-            shopItems = records.map<ShopItem>((_record) => ShoplistItemConverter.parseAirtableRecord(_record)).toList();
+            shoplistItems = records.map<ShoplistItem>((_record) => ShoplistItemConverter.parseAirtableRecord(_record)).toList();
         } else {
             print('Request failed with status: ${response.statusCode}.');
         }
-        return shopItems;
+        return shoplistItems;
     }
 
-    Future<ShopItem> createShoplistItem(ShopItem item) async {
+    Future<ShoplistItem> createShoplistItem(ShoplistItem item) async {
         var url = '$airtableApiUrl/courses';
         var body = jsonEncode({
             'records': [
@@ -176,7 +176,7 @@ class FimaApi {
             'Content-Type': 'application/json', 
             ...airtableAuthHeaders
         }, body: body);
-        ShopItem createdItem;
+        ShoplistItem createdItem;
         if (response.statusCode == 200) {
             final records = _getAirtableRecordsFrom(response);
             createdItem = ShoplistItemConverter.parseAirtableRecord(records.first);
@@ -186,7 +186,7 @@ class FimaApi {
         return createdItem;
     }
 
-    Future<ShopItem> updateShoplistItem(ShopItem item) async {
+    Future<ShoplistItem> updateShoplistItem(ShoplistItem item) async {
         var url = '$airtableApiUrl/courses';
         var body = jsonEncode({
             'records': [
@@ -204,7 +204,7 @@ class FimaApi {
             'Content-Type': 'application/json', 
             ...airtableAuthHeaders
         }, body: body);
-        ShopItem updatedItem;
+        ShoplistItem updatedItem;
         if (response.statusCode == 200) {
             final records = _getAirtableRecordsFrom(response);
             updatedItem = ShoplistItemConverter.parseAirtableRecord(records.first);
@@ -214,7 +214,7 @@ class FimaApi {
         return updatedItem;
     }
 
-    Future<void> deleteShoplistItem(ShopItem item) async {
+    Future<void> deleteShoplistItem(ShoplistItem item) async {
         var url = '$airtableApiUrl/courses?records[]=${item.id}';
         var urlEncoded = Uri.encodeFull(url);
         var response = await http.delete(urlEncoded, headers: airtableAuthHeaders);
