@@ -9,6 +9,10 @@ class MealConverter {
         : Meal.DINNER;
     }
 
+    static String parseToString(Meal meal) {
+        return meal.toString().split('.').last;
+    }
+
     static String translateFR(Meal meal) {
         String translatedMeal;
         switch (meal) {

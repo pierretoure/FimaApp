@@ -31,7 +31,7 @@ class Task {
         '_id': id,
         'user': user,
         'service': service,
-        'meal': meal,
+        'meal': MealConverter.parseToString(meal),
         'date': date != null ? date.toString() : null
     };
 }
