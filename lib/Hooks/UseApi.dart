@@ -1,5 +1,5 @@
 import 'package:FimaApp/redux/states/AppState.dart';
-import 'package:FimaApp/utils/Api.dart';
+import 'package:FimaApp/core/FimaApi.dart';
 import 'package:flutter_redux_hooks/flutter_redux_hooks.dart';
 
 /// A hook to access the redux store's state.api. 

@@ -1,9 +1,7 @@
-
-
 import 'dart:convert';
 
 import 'package:FimaApp/modals/User.dart';
-import 'package:FimaApp/utils/Api.dart';
+import 'package:FimaApp/core/FimaApi.dart';
 
 class AppState {
     final User user;
