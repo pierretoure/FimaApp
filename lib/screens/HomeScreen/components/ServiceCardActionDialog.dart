@@ -5,7 +5,7 @@ import 'package:FimaApp/modals/Task.dart';
 import 'package:FimaApp/modals/User.dart';
 import 'package:FimaApp/redux/states/AppState.dart';
 import 'package:FimaApp/screens/HomeScreen/components/UserTag.dart';
-import 'package:FimaApp/widgets/Tag/FimaDialog/FimaDialog.dart';
+import 'package:FimaApp/widgets/FimaDialog/FimaDialog.dart';
 import 'package:FimaApp/widgets/Tag/Tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
