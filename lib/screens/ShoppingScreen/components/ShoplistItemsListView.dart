@@ -13,11 +13,11 @@ import 'UpdateShoplistItemDialog.dart';
 class ShoplistItemsListView extends HookWidget {
     const ShoplistItemsListView({
         Key key,
-        @required this.shoplistItemController,
+        @required this.controller,
         this.onRefresh,
     }) : super(key: key);
 
-    final ValueNotifier<List<ShoplistItem>> shoplistItemController;
+    final ValueNotifier<List<ShoplistItem>> controller;
     final Future<void> Function() onRefresh;
 
     @override
@@ -29,23 +29,29 @@ class ShoplistItemsListView extends HookWidget {
         final refreshController = RefreshController();
 
         return SmartRefresher(
-            child: ListView.separated(
-                itemCount: shoplistItemController.value.length,
-                itemBuilder: (context, index) {
-                    ShoplistItem item = shoplistItemController.value.elementAt(index);
-                    final user = item.username != null
-                        ? users.firstWhere((_user) => _user.name.toLowerCase() == item.username.toLowerCase(), orElse: () => null)
-                        : null;
-                    return ShoplistItemDismissible(
-                        item: item, 
-                        user: user,
-                        onTap: () => 
-                            showUpdateShoplistItemDialog(context, item), 
-                        onDismissed: (_) => cleanDeleteShoplistItem(deleteShoplistItem, item));
-                },
-                separatorBuilder: (context, index) => Divider(height: 1),
-                padding: EdgeInsets.only(bottom: 96),
-            ),
+            child: controller.value.length > 0
+                ? ListView.separated(
+                    itemCount: controller.value.length,
+                    itemBuilder: (context, index) {
+                        ShoplistItem item = controller.value.elementAt(index);
+                        final user = item.username != null
+                            ? users.firstWhere((_user) => _user.name.toLowerCase() == item.username.toLowerCase(), orElse: () => null)
+                            : null;
+                        return ShoplistItemDismissible(
+                            item: item, 
+                            user: user,
+                            onTap: () => 
+                                showUpdateShoplistItemDialog(context, item), 
+                            onDismissed: (_) => cleanDeleteShoplistItem(deleteShoplistItem, item));
+                    },
+                    separatorBuilder: (context, index) => Divider(height: 1),
+                    padding: EdgeInsets.only(bottom: 96))
+                : ListView(
+                    children: [
+                        EmptyShoplistIndicator(),
+                    ],
+                    padding: EdgeInsets.all(64),
+                ),
             controller: refreshController,
             onRefresh: () async {
                 await onRefresh();
@@ -61,11 +67,11 @@ class ShoplistItemsListView extends HookWidget {
             child: UpdateShoplistItemDialog(
                 item: item,
                 onShoplistItemUpdated: (updatedItem) {
-                    List<ShoplistItem> updatedShoplistItems = shoplistItemController.value.map((_item) {
+                    List<ShoplistItem> updatedShoplistItems = controller.value.map((_item) {
                         if (_item.id == updatedItem.id) return updatedItem;
                         else return _item;
                     }).toList();
-                    return shoplistItemController.value = updatedShoplistItems;
+                    return controller.value = updatedShoplistItems;
                 },
             ),
         );
@@ -73,7 +79,55 @@ class ShoplistItemsListView extends HookWidget {
 
     void cleanDeleteShoplistItem(Future<void> Function(ShoplistItem) deleteShoplistItem, ShoplistItem item) {
         deleteShoplistItem(item);
-        shoplistItemController.value = shoplistItemController.value.where((_item) => _item.id != item.id).toList();
+        controller.value = controller.value.where((_item) => _item.id != item.id).toList();
+    }
+}
+
+class EmptyShoplistIndicator extends StatelessWidget {
+    const EmptyShoplistIndicator({
+        Key key,
+    }) : super(key: key);
+
+    @override
+    Widget build(BuildContext context) {
+        return Container(
+            child: Column(
+                children: [
+                    Icon(
+                        Icons.no_food_rounded,
+                        size: 128,
+                        color: Colors.blueGrey,
+                    ),
+                    Padding(
+                        child: Center(
+                            child: Text(
+                                'Liste de courses vide',
+                                style: TextStyle(
+                                    fontSize: 23,
+                                    color: Colors.blueGrey,
+                                ),
+                                textAlign: TextAlign.center,
+                            ),
+                        ),
+                        padding: const EdgeInsets.only(top: 32),
+                    ),
+                    Padding(
+                        child: Text(
+                            'Commencez par ajouter des produits à votre liste de courses avec le bouton +',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey[600]
+                            ),
+                            textAlign: TextAlign.center,
+                        ),
+                        padding: EdgeInsets.only(top: 16),
+                    ),
+                ],
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+            ),
+            height: MediaQuery.of(context).size.height - 328, // 100(bottomAppBar ?) + 128(padding 64(top) + 64(bottom)) + 100(to center top)
+        );
     }
 }
 

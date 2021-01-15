@@ -28,19 +28,16 @@ class ShoppingScreen extends HookWidget {
         }, []);
 
         return Scaffold(
-            body: Container(
-                child: isLoadingController.value
+            body: isLoadingController.value
                 ? Center(
                     child: CircularProgressIndicator(),
                 )
                 : ShoplistItemsListView(
-                    shoplistItemController: shoplistItemController,
+                    controller: shoplistItemController,
                     onRefresh: () async {
                         final _shoplistItems = await getShoplistItems();
                         shoplistItemController.value = _shoplistItems;
-                    },
-                ),
-            ),
+                    }),
             floatingActionButton: FloatingActionButton(
                 child: Icon(Icons.add_rounded, size: 32),
                 onPressed: () => showDialog(
