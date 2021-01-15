@@ -218,7 +218,6 @@ class FimaApi {
         var url = '$airtableApiUrl/courses?records[]=${item.id}';
         var urlEncoded = Uri.encodeFull(url);
         var response = await http.delete(urlEncoded, headers: airtableAuthHeaders);
-        print(urlEncoded);
         if (response.statusCode != 200) {
             print('Request failed with status: ${response.statusCode}.');
         }
