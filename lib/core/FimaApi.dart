@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:FimaApp/modals/Abscence.dart';
 import 'package:FimaApp/modals/Secrets.dart';
 import 'package:FimaApp/modals/Service.dart';
 import 'package:FimaApp/modals/ShoplistItem.dart';
@@ -15,21 +16,26 @@ import '../utils/Converters.dart';
 /// FimaApi Schema
 ///
 /// - Users
-/// static Future<List<User>> getUsers();
-/// static Future<void> getDelegatedUserOf(Service service);
+/// Future<List<User>> getUsers();
+/// Future<void> getDelegatedUserOf(Service service);
+/// Future<List<Absences>> getAbsencesOf(User user);
+/// Future<Absences> createAbsence(Absence absence);
+/// Future<List<Absences>> createAbsences(User user, List<Absence> absences);
+/// Future<void> deleteAbsence(Absence absence);
+/// Future<void> deleteAbsences(User user, List<Absence> absences);
 /// 
 /// - Services
-/// static List<Service> services();
+/// List<Service> services();
 /// 
 /// - Tasks
-/// static Future<List<Task>> getTasksOf(Service service);
-/// static Future<Task> createTask(Task task)
+/// Future<List<Task>> getTasksOf(Service service);
+/// Future<Task> createTask(Task task)
 /// 
 /// - Shoplist
-/// static Future<List<ShoplistItem>> getShoplistItems()
-/// static Future<ShoplistItem> createShoplistItem(ShoplistItem item)
-/// static Future<ShoplistItem> updateShoplistItem(ShoplistItem item)
-/// static Future<void> deleteShoplistItem(ShoplistItem item)
+/// Future<List<ShoplistItem>> getShoplistItems()
+/// Future<ShoplistItem> createShoplistItem(ShoplistItem item)
+/// Future<ShoplistItem> updateShoplistItem(ShoplistItem item)
+/// Future<void> deleteShoplistItem(ShoplistItem item)
 ///
 class FimaApi {
 
@@ -102,6 +108,75 @@ class FimaApi {
             print('Request failed with status: ${response.statusCode}.');
         }
         return user;
+    }
+
+    Future<List<Absence>> getAbsencesOf(User user) async {
+        var url = '$fimaApiUrl/users/${user.id}/absences';
+        var response = await http.get(url);
+        var absences = [];
+        if (response.statusCode == 200) {
+            final data = _getDataFrom(response);
+            absences = data.map<Absence>((_absence) => Absence.fromJson(_absence)).toList();
+        } else {
+            print('Request failed with status: ${response.statusCode}.');
+        }
+        return absences;
+    }
+
+    Future<Absence> createAbsence(Absence absence) async {
+        var url = '$fimaApiUrl/users/${absence.user.id}/absences';
+        var response = await http.post(url, body: {
+            'date': absence.date.toIso8601String()+'Z',
+            'meal': MealConverter.parseToString(absence.meal)
+        });
+        var newAbsence;
+        if (response.statusCode == 200) {
+            var data = _getDataFrom(response);
+            newAbsence = Absence.fromJson(data);
+        } else {
+            print('Request failed with status: ${response.statusCode}.');
+        }
+        return newAbsence;
+    }
+
+    Future<List<Absence>> createAbsences(User user, List<Absence> absences) async {
+        var url = '$fimaApiUrl/users/${user.id}/absences-collection';
+        var response = await http.post(url, body: {
+            'absences': jsonEncode(absences.map((_absence) => {
+                'date': _absence.date.toIso8601String()+'Z',
+                'meal': MealConverter.parseToString(_absence.meal)
+            }).toList())
+        });
+        var newAbsences;
+        if (response.statusCode == 200) {
+            var data = _getDataFrom(response);
+            newAbsences = data.map<Absence>((_absence) => Absence.fromJson(_absence)).toList();
+        } else {
+            print('Request failed with status: ${response.statusCode}.');
+        }
+        return newAbsences;
+    }
+
+    Future<void> deleteAbsence(Absence absence) async {
+        var url = '$fimaApiUrl/users/${absence.user.id}/absences/${absence.id}';
+        var response = await http.delete(url);
+        if (response.statusCode != 200) {
+            print('Request failed with status: ${response.statusCode}.');
+        }
+    }
+
+    Future<void> deleteAbsences(User user, List<Absence> absences) async {
+        var url = '$fimaApiUrl/users/${user.id}/absences-collection?absences[]=${absences.map((_absence) => _absence.id).toList().join(',')}';
+        var urlEncoded = Uri.encodeFull(url);
+        var response = await http.delete(urlEncoded);
+        var newAbsences;
+        if (response.statusCode == 200) {
+            var data = _getDataFrom(response);
+            newAbsences = data.map<Absence>((_absence) => Absence.fromJson(_absence)).toList();
+        } else {
+            print('Request failed with status: ${response.statusCode}.');
+        }
+        return newAbsences;
     }
 
     // !! Services
