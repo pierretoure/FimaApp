@@ -12,8 +12,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_redux_hooks/flutter_redux_hooks.dart';
 import 'package:intl/intl.dart';
 
-import 'ServiceCardActionDialogSectionTitle.dart';
-
 class ServiceCardActionDialog extends HookWidget {
     const ServiceCardActionDialog({
         Key key,
@@ -79,7 +77,7 @@ class ServiceCardActionDialog extends HookWidget {
             padding: const EdgeInsets.only(top: 8.0),
             child: Column(
                 children: [
-                    ServiceCardActionDialogSectionTitle(title: 'Date'),
+                    buildTitle('Date'),
                     Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Row(
@@ -142,7 +140,7 @@ class ServiceCardActionDialog extends HookWidget {
     Column buildUserSection(List<User> users, ValueNotifier<User> selectedUserController) {
         return Column(
             children: [
-                ServiceCardActionDialogSectionTitle(title: 'Qui ?'),
+                buildTitle('Qui ?'),
                 Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Wrap(
@@ -159,4 +157,12 @@ class ServiceCardActionDialog extends HookWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
         );
     }
+
+    Text buildTitle(String title) => Text(
+        title,
+        style: TextStyle(
+            fontSize: 18,
+            color: Colors.grey[600]
+        ),
+    );
 }
