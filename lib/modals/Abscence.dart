@@ -7,21 +7,21 @@ import 'User.dart';
 class Absence {
 
     const Absence({
-        @required this.id,
-        @required this.user,
         @required this.date,
-        @required this.meal
+        @required this.meal,
+        this.id,
+        this.userId,
     });
     
     final String id;
-    final User user;
+    final String userId;
     final DateTime date;
     final Meal meal;
 
     // !!!
     static Absence fromJson(json) => Absence(
         id: json['_id'] != null ? json['_id'] : 'unknow',
-        user: json['user'] != null ? User.fromJson(json['user']) : null,
+        userId: json['user'],
         date: json['date'] != null ? DateTime.parse(json['date']) : null,
         meal: json['meal'] != null ? MealConverter.parse(json['meal']) : null,
     );
@@ -29,6 +29,7 @@ class Absence {
     // !!!
     dynamic toJson() => {
         '_id': id,
+        'user': userId,
         'date': date != null ? date.toString() : null,
         'meal': MealConverter.parseToString(meal),
     };

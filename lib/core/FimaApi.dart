@@ -124,7 +124,7 @@ class FimaApi {
     }
 
     Future<Absence> createAbsence(Absence absence) async {
-        var url = '$fimaApiUrl/users/${absence.user.id}/absences';
+        var url = '$fimaApiUrl/users/${absence.userId}/absences';
         var response = await http.post(url, body: {
             'date': absence.date.toIso8601String()+'Z',
             'meal': MealConverter.parseToString(absence.meal)
@@ -158,7 +158,7 @@ class FimaApi {
     }
 
     Future<void> deleteAbsence(Absence absence) async {
-        var url = '$fimaApiUrl/users/${absence.user.id}/absences/${absence.id}';
+        var url = '$fimaApiUrl/users/${absence.userId}/absences/${absence.id}';
         var response = await http.delete(url);
         if (response.statusCode != 200) {
             print('Request failed with status: ${response.statusCode}.');
