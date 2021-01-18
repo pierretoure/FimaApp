@@ -22,7 +22,7 @@ class UserProfile extends StatelessWidget {
                         user.name,
                         style: TextStyle(
                             color: userColor,
-                            fontSize: 31
+                            fontSize: 28
                         ),
                     ),
                     LogOutButton(),
