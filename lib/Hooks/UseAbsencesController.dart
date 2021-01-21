@@ -1,10 +1,8 @@
 import 'package:FimaApp/modals/Abscence.dart';
 import 'package:FimaApp/modals/Meal.dart';
-import 'package:FimaApp/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'package:collection/collection.dart';
 
 /// The current absences, absencesToBeCreated, and absencesToBeDeleted 
 /// state for editing a run of text.

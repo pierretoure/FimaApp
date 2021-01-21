@@ -1,22 +1,16 @@
 import 'package:FimaApp/hooks/UseAbsencesController.dart';
 import 'package:FimaApp/hooks/UseApi.dart';
 import 'package:FimaApp/modals/Abscence.dart';
-import 'package:FimaApp/modals/Meal.dart';
 import 'package:FimaApp/modals/User.dart';
 import 'package:FimaApp/redux/states/AppState.dart';
 import 'package:FimaApp/widgets/Skeleton/RoundedSkeleton.dart';
-import 'package:FimaApp/widgets/Skeleton/Skeleton.dart';
-import 'package:FimaApp/utils/Utils.dart';
 import 'package:FimaApp/widgets/FimaBottomSheet/FimaBottomSheet.dart';
 import 'package:FimaApp/widgets/FimaCard/FimaCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_redux_hooks/flutter_redux_hooks.dart';
-import 'package:infinite_listview/infinite_listview.dart';
-import 'package:skeleton_text/skeleton_text.dart';
 
-import 'AbsenceEditor.dart';
 import 'AbsencesEditingListView.dart';
 
 class AbsenceSection extends HookWidget {
