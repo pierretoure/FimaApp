@@ -1,8 +1,8 @@
 import 'package:FimaApp/utils/Converters.dart';
+import 'package:FimaApp/utils/Utils.dart';
 import 'package:flutter/material.dart';
 
 import 'Meal.dart';
-import 'User.dart';
 
 class Absence {
 
@@ -33,4 +33,34 @@ class Absence {
         'date': date != null ? date.toString() : null,
         'meal': MealConverter.parseToString(meal),
     };
+
+    // !!!
+    @override
+    bool operator ==(Object other) {
+        if (identical(this, other))
+            return true;
+        return other is Absence
+            && other.id == id
+            && other.userId == userId
+            && DateUtils.isSameDay(other.date, date)
+            && other.meal == meal;
+    }
+
+    // compare both absences date and meal.
+    // return true if equals.
+    //
+    // consider using equality operator == to
+    // compare also id and userId 
+    bool equals(Absence other) =>
+        DateUtils.isSameDay(other.date, date)
+        && other.meal == meal;
+
+    // !!!
+    @override
+    int get hashCode => hashValues(
+        id.hashCode,
+        userId.hashCode,
+        date.hashCode,
+        meal.hashCode,
+  );
 }
