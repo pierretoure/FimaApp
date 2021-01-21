@@ -60,6 +60,6 @@ class HomeScreen extends HookWidget {
 
     Future<void> updateServices(List<ServiceCardController> controllers) async {
         final refreshControllers = controllers.map<Future<void>>((_controller) => _controller.refresh());
-        await Future.wait(refreshControllers);
+        await Future.wait<void>(refreshControllers);
     }
 }

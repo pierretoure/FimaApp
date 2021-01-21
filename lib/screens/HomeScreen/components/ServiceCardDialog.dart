@@ -17,14 +17,14 @@ class ServiceCardActionDialog extends HookWidget {
         Key key,
         @required this.service,
         @required this.user,
-        @required this.asyncCallback,
+        @required this.onTaskCreated,
         this.useMeal = false,
     }) : super(key: key);
 
     final Service service;
     final User user;
     final bool useMeal;
-    final Future<void> Function() asyncCallback;
+    final Future<void> Function(Task task) onTaskCreated;
 
     @override
     Widget build(BuildContext context) {
@@ -61,8 +61,8 @@ class ServiceCardActionDialog extends HookWidget {
                     user: selectedUserController.value,
                     date: selectedDateController.value,
                     meal: selectedMealController.value);
-                await createTask(newTask);
-                await asyncCallback();
+                final createdTask = await createTask(newTask);
+                await onTaskCreated(createdTask);
             },
         );
     }

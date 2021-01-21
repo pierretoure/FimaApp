@@ -1,3 +1,4 @@
+import 'package:FimaApp/widgets/FimaButtons/FimaButtons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -37,14 +38,8 @@ class FimaDialog extends HookWidget {
             actions: [
                 isValidatingController.value 
                 ? Container()
-                : FlatButton(
-                    child: Text(
-                        cancelButtonTitle,
-                        style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 18,
-                        ),
-                    ),
+                : FimaFlatButton(
+                    title: cancelButtonTitle,
                     onPressed: () async {
                         if(onCancelButtonPressed != null) onCancelButtonPressed();
                         if(onCancelButtonPressedAsync != null) await onCancelButtonPressedAsync();
@@ -52,18 +47,17 @@ class FimaDialog extends HookWidget {
                     },
                 ),
                 isValidatingController.value
-                ? CircularProgressIndicator()
-                : FlatButton(
-                    child: Text(
-                        validButtonTitle,
-                        style: TextStyle(
-                            fontSize: 18,
-                        ),
-                    ),
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(),
+                )
+                : FimaFlatButton(
+                    title: validButtonTitle,
+                    isActive: true,
                     onPressed: () async {
+                        isValidatingController.value = true;
                         if(onValidButtonPressed != null) onValidButtonPressed();
                         if(onValidButtonPressedAsync != null) {
-                            isValidatingController.value = true;
                             await onValidButtonPressedAsync();
                         }
                         Navigator.of(context).pop();

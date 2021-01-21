@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'FimaCard.dart';
+import '../FimaCard.dart';
 
 
 class FimaCardBody extends HookWidget {

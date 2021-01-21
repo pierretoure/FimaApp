@@ -1,14 +1,10 @@
-import 'package:FimaApp/Hooks/UseApi.dart';
-import 'package:FimaApp/modals/Service.dart';
-import 'package:FimaApp/modals/Task.dart';
-import 'package:FimaApp/modals/User.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'FimaCardAction.dart';
-import 'FimaCardBody.dart';
+import 'components/FimaCardAction.dart';
+import 'components/FimaCardBody.dart';
 
 class FimaCard extends HookWidget {
 
