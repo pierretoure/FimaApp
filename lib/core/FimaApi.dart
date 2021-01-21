@@ -166,17 +166,12 @@ class FimaApi {
     }
 
     Future<void> deleteAbsences(User user, List<Absence> absences) async {
-        var url = '$fimaApiUrl/users/${user.id}/absences-collection?absences[]=${absences.map((_absence) => _absence.id).toList().join(',')}';
+        var url = '$fimaApiUrl/users/${user.id}/absences-collection?absences=["${absences.map((_absence) => _absence.id).toList().join('","')}"]';
         var urlEncoded = Uri.encodeFull(url);
         var response = await http.delete(urlEncoded);
-        var newAbsences;
-        if (response.statusCode == 200) {
-            var data = _getDataFrom(response);
-            newAbsences = data.map<Absence>((_absence) => Absence.fromJson(_absence)).toList();
-        } else {
+        if (response.statusCode != 200) {
             print('Request failed with status: ${response.statusCode}.');
         }
-        return newAbsences;
     }
 
     // !! Services
@@ -207,16 +202,21 @@ class FimaApi {
         return tasks;
     }
     
-    Future<void> createTask(Task task) async {
+    Future<Task> createTask(Task task) async {
         var url = '$fimaApiUrl/services/${task.service.id}/tasks';
         var response = await http.post(url, body: {
             'user_id': task.user.id,
             'date': task.date.toIso8601String()+'Z',
             'meal': task.meal.toString().split('.').last
         });
-        if (response.statusCode != 200) {
+        Task newTask;
+        if (response.statusCode == 200) {
+            final data = _getDataFrom(response);
+            newTask = Task.fromJson(data);
+        } else {
             print('Request failed with status: ${response.statusCode}.');
         }
+        return newTask;
     }
 
     // !! Shoplist
