@@ -4,12 +4,16 @@ import 'package:FimaApp/Hooks/UseApi.dart';
 import 'package:FimaApp/modals/Service.dart';
 import 'package:FimaApp/modals/Task.dart';
 import 'package:FimaApp/modals/User.dart';
+import 'package:FimaApp/redux/states/AppState.dart';
 import 'package:FimaApp/utils/Converters.dart';
+import 'package:FimaApp/utils/Utils.dart';
 import 'package:FimaApp/widgets/FimaCard/FimaCard.dart';
+import 'package:FimaApp/widgets/Skeleton/RoundedSkeleton.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_redux_hooks/flutter_redux_hooks.dart';
 import 'package:intl/intl.dart';
 
 import 'ServiceCardDialog.dart';
@@ -35,6 +39,8 @@ class ServiceCard extends HookWidget {
         final delegatedUserController = useState<User>(null);
         final tasksController = useState<List<Task>>([]);
 
+        final user = useSelector<AppState, User>((state) => state.user);
+
         useEffect(() {
             var isDisposed = false;
             final fetchDelegatedUserAndTasks = () async {
@@ -59,36 +65,18 @@ class ServiceCard extends HookWidget {
             contentBuilder: (context, isOpen) => buildContent(isOpen, delegatedUserController),
             openContentBuilder: (context) => buildOpenContent(tasksController),
             actionIconData: Icons.done_rounded,
-            onAction: () => showServiceCardActionDialog(
-                context, 
-                getDelegatedUserOf, 
-                getTasksOf, 
-                delegatedUserController, 
-                tasksController),
-        );
-    }
-
-    Future<void> showServiceCardActionDialog(
-        BuildContext context, 
-        Future<User> getDelegatedUserOf(Service service), 
-        Future<List<Task>> getTasksOf(Service service), 
-        ValueNotifier<User> delegatedUserController, 
-        ValueNotifier<List<Task>> tasksController
-    ) async {
-        return showDialog<void>(
-            context: context,
-            builder: (context) => ServiceCardActionDialog(
-                service: service, 
-                asyncCallback: () async {
-                    final List delegatedUserAndTasks = await Future.wait([
-                        getDelegatedUserOf(service),
-                        getTasksOf(service)
-                    ]);
-                    delegatedUserController.value = delegatedUserAndTasks[0];
-                    tasksController.value = delegatedUserAndTasks[1];
-                }, 
-                user: delegatedUserController.value,
-                useMeal: service.id == 1,
+            onAction: () => showDialog<void>(
+                context: context,
+                builder: (context) => ServiceCardActionDialog(
+                    service: service, 
+                    onTaskCreated: (newTask) async {
+                        final delegatedUser = await getDelegatedUserOf(service);
+                        delegatedUserController.value = delegatedUser;
+                        tasksController.value = TaskUtils.getTasksSortedByHistory([...tasksController.value, newTask]);
+                    }, 
+                    user: user,
+                    useMeal: service.id == 1,
+                ),
             ),
         );
     }
@@ -122,26 +110,29 @@ class ServiceCard extends HookWidget {
     }
 
     Padding buildContent(bool isOpen, ValueNotifier<User> delegatedUserController) {
-      return Padding(
-              child: Row(
-                  children: [
-                      Icon(
-                          isOpen 
-                          ? Icons.keyboard_arrow_down_rounded 
-                          : Icons.keyboard_arrow_right_rounded,
-                          size: 28,
-                          color: Colors.grey,
-                      ),
-                      Padding(
-                          child: delegatedUserController.value != null 
-                          ? UserTag(user: delegatedUserController.value)
-                          : Text('loading...'),
-                          padding: const EdgeInsets.only(left: 32.0),
-                      ),
-                  ],
-              ),
-              padding: const EdgeInsets.only(top: 8.0),
-          );
+        return Padding(
+            child: Row(
+                children: [
+                    Icon(
+                        isOpen 
+                        ? Icons.keyboard_arrow_down_rounded 
+                        : Icons.keyboard_arrow_right_rounded,
+                        size: 28,
+                        color: Colors.grey,
+                    ),
+                    Padding(
+                        child: delegatedUserController.value != null 
+                        ? UserTag(user: delegatedUserController.value)
+                        : RoundedSkeleton(
+                            height: 32,
+                            width: 90,
+                        ),
+                        padding: const EdgeInsets.only(left: 32.0),
+                    ),
+                ],
+            ),
+            padding: const EdgeInsets.only(top: 8.0),
+        );
     }
 }
 
