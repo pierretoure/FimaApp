@@ -1,25 +1,17 @@
-
-import 'package:FimaApp/modals/User.dart';
-import 'package:FimaApp/redux/actions/UserActions.dart';
-import 'package:FimaApp/redux/states/AppState.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_redux_hooks/flutter_redux_hooks.dart';
 
 import 'components/AbsenceSection.dart';
 import 'components/UserProfile.dart';
 
-class ProfileScreen extends HookWidget {
+class ProfileScreen extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
-        final user = useSelector<AppState, User>((state) => state.user);
-
         return ListView(
             children: [
-                UserProfile(user: user),
+                UserProfile(),
                 Padding(
                     padding: const EdgeInsets.only(top: 32),
-                    child: AbsenceSection(user: user),
+                    child: AbsenceSection(),
                 ),
             ],
             padding: EdgeInsets.all(32),

@@ -1,85 +1,142 @@
+import 'package:FimaApp/hooks/UseAbsencesController.dart';
 import 'package:FimaApp/hooks/UseApi.dart';
 import 'package:FimaApp/modals/Abscence.dart';
 import 'package:FimaApp/modals/Meal.dart';
 import 'package:FimaApp/modals/User.dart';
+import 'package:FimaApp/redux/states/AppState.dart';
+import 'package:FimaApp/widgets/Skeleton/RoundedSkeleton.dart';
+import 'package:FimaApp/widgets/Skeleton/Skeleton.dart';
+import 'package:FimaApp/utils/Utils.dart';
+import 'package:FimaApp/widgets/FimaBottomSheet/FimaBottomSheet.dart';
 import 'package:FimaApp/widgets/FimaCard/FimaCard.dart';
-import 'package:FimaApp/widgets/FimaDialog/FimaDialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_redux_hooks/flutter_redux_hooks.dart';
+import 'package:infinite_listview/infinite_listview.dart';
+import 'package:skeleton_text/skeleton_text.dart';
+
+import 'AbsenceEditor.dart';
+import 'AbsencesEditingListView.dart';
 
 class AbsenceSection extends HookWidget {
     const AbsenceSection({
         Key key,
-        @required this.user,
     }) : super(key: key);
-
-    final User user;
 
     @override
     Widget build(BuildContext context) {
-        final absencesController = useState<List<Absence>>([]);
-        final getAbsences = useApi<Future<List<Absence>> Function()>
-            ((api) => () => api.getAbsencesOf(user));
-        final createAbsence = useApi<Future<Absence> Function(Absence)>
-            ((api) => (absence) => api.createAbsence(absence));
-        final deleteAbsence = useApi<Future<void> Function(Absence)>
-            ((api) => (absence) => api.deleteAbsence(absence));
+
+        final user = useSelector<AppState, User>((state) => state.user);
+        final getAbsences = useApi<Future<List<Absence>> Function()>((api) => () => api.getAbsencesOf(user));
+        
+        final createAbsences = useApi<Future<List<Absence>> Function(List<Absence>)>
+            ((api) => (absences) => api.createAbsences(user, absences));
+        final deleteAbsences = useApi<Future<void> Function(List<Absence>)>
+            ((api) => (absences) => api.deleteAbsences(user, absences));
+
+        final absencesEditingController = useAbsencesEditingController.fromValue(
+            AbsencesEditingValue(
+                absences: [],
+                createAbsences: createAbsences,
+                deleteAbsences: deleteAbsences));
+
+        final isLoadingController = useState<bool>(true);
 
         useEffect(() {
             bool isDisposed = false;
-            var fetchAbsences = () async {
-                final absences = await getAbsences();
-                if (absences != null && !isDisposed) absencesController.value = absences;
+            final fetchAbsences = () async {
+                final _absences = await getAbsences();
+                if (!isDisposed) {
+                    absencesEditingController.absences = [..._absences];
+                    isLoadingController.value = false;
+                }
             };
             fetchAbsences();
             return () => isDisposed = true;
         }, []);
 
+        final update = useValueListenable<AbsencesEditingValue>(absencesEditingController);
+
+        useEffect(() {
+            absencesEditingController.value = update;
+            return null;
+        }, [update]);
+
         return FimaCard(
             title: 'Absences', 
-            contentBuilder: (context, isOpen) => Padding(
-                child: RichText(
-                    text: TextSpan(
-                        // text: absencesController.value.length.toString(),
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.w700
-                        ),
-                        children: [
-                            TextSpan(
-                                text: 'à venir...',// ' définie${absencesController.value.length > 1 ? 's' : ''}',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.normal
-                                ),
-                            )
-                        ]
-                    ),
-                ),
-                padding: const EdgeInsets.only(top: 16),
-            ),
+            contentBuilder: (context, isOpen) => isLoadingController.value 
+                ? buildLoadingIndicator()
+                : buildContent(absencesEditingController),
             actionIconData: Icons.date_range_rounded,
-            actionPosition: ActionPosition.right,
-            // onAction: () => smartCreateAbsence(createAbsence, Absence(date: DateTime.now(), meal: Meal.DINNER, userId: user.id), absencesController),
-            // onTap: () => smartDeleteAbsence(deleteAbsence, absencesController.value.first, absencesController),
+            onAction: () async {
+                await showModalBottomSheet(
+                    context: context,
+                    builder: (context) => FimaBottomSheet(
+                        title: 'Absences',
+                        content: Container(
+                            child: AbsencesEditingListView(controller: absencesEditingController),
+                            decoration: BoxDecoration(
+                                border: Border.symmetric(
+                                    horizontal: BorderSide(
+                                        width: 1,
+                                        color: Colors.grey[300],
+                                    ),
+                                ),
+                            ),
+                            height: 140,
+                        ),
+                        validButtonTitle: 'Sauvegarder',
+                        onValidButtonPressedAsync: () async {
+                            await absencesEditingController.save();
+                        },
+                    ),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(32))),
+                );
+                // Clear editions on BottomSheet close
+                absencesEditingController.clearEditions();
+            },
         );
     }
 
-    Future<void> smartCreateAbsence(
-        Future<Absence> Function(Absence) createAbsence, 
-        Absence absence,
-        ValueNotifier<List<Absence>> absencesController,
-    ) async {
-        final newAbsence = await createAbsence(absence);
-        absencesController.value = [...absencesController.value, newAbsence];
+    Widget buildLoadingIndicator() {
+        return Padding(
+            child: RoundedSkeleton(
+                height: 16,
+                width: 80,
+            ),
+            padding: EdgeInsets.only(top: 16),
+        );
     }
 
-    Future<void> smartDeleteAbsence(
-        Future<void> Function(Absence) deleteAbsence, 
-        Absence absence,
-        ValueNotifier<List<Absence>> absencesController
-    ) async {
-        await deleteAbsence(absence);
-        absencesController.value = absencesController.value.sublist(1);
+    Widget buildContent(AbsencesEditingController controller) {
+        final absencesCount = controller.absences.length;
+        return Padding(
+            child: RichText(
+                text: TextSpan(
+                    // text: absencesController.value.length.toString(),
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[700],
+                        fontWeight: FontWeight.w700
+                    ),
+                    children: [
+                        TextSpan(
+                            text: '$absencesCount définie${absencesCount > 1 ? 's' : ''}',
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal
+                            ),
+                        )
+                    ]
+                ),
+            ),
+            padding: const EdgeInsets.only(top: 16),
+        );
+    }
+
+    Future<void> saveModifications() async {
+        return Future.delayed(Duration(milliseconds: 500), 
+            () => print('saved'));
     }
 }
